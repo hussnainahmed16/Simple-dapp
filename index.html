@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Simple dApp</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Ethers.js library via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+</head>
+<body>
+
+  <div class="box">
+    <!-- Image -->
+    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" alt="Ethereum Logo">
+
+    <!-- Heading & Paragraph -->
+    <h1>Simple dApp</h1>
+    <p>Interact with Ethereum Sepolia testnet using MetaMask.</p>
+
+    <!-- List -->
+    <ul>
+      <li>Connect MetaMask</li>
+      <li>Read message from contract</li>
+      <li>Write new message to blockchain</li>
+    </ul>
+
+    <!-- Link -->
+    <p>Reference: <a href="https://www.w3schools.com/js/" target="_blank">W3Schools JavaScript</a></p>
+
+    <!-- Buttons & Inputs -->
+    <button onclick="connectWallet()">1. Connect Wallet</button>
+    <p id="walletAddress">Not Connected</p>
+
+    <hr>
+
+    <h3>Contract Interaction</h3>
+    <button onclick="readMessage()">Read Message</button>
+    <p id="displayMessage">Current Message: --</p>
+
+    <input type="text" id="userInput" placeholder="Enter new message">
+    <br>
+    <button onclick="writeMessage()">Update Message</button>
+    <button onclick="resetContractMessage()">Reset</button>
+
+    <p id="status"></p>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Paste your deployed contract address from Remix here
+    const CONTRACT_ADDRESS = "0x927001DCB7f57793086845cd6632a89cbf499024";
+
+    const ABI = [
+      "function message() view returns (string)",
+      "function getMessage() view returns (string)",
+      "function setMessage(string memory _newMessage)",
+      "function resetMessage()"
+    ];
+
+    let provider;
+    let signer;
+    let contract;
+
+    // 1. Connect MetaMask
+    async function connectWallet() {
+      if (window.ethereum) {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        
+        const address = await signer.getAddress();
+        document.getElementById("walletAddress").innerText = "Connected: " + address;
+
+        contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+      } else {
+        alert("Please install MetaMask!");
+      }
+    }
+
+    // 2. Read Function
+    async function readMessage() {
+      if (!contract) return alert("Connect wallet first!");
+      const currentMsg = await contract.getMessage();
+      document.getElementById("displayMessage").innerText = "Current Message: " + currentMsg;
+    }
+
+    // 3. Write Function
+    async function writeMessage() {
+      if (!contract) return alert("Connect wallet first!");
+      const text = document.getElementById("userInput").value;
+      if (!text) return alert("Please type a message.");
+
+      document.getElementById("status").innerText = "Sending transaction... please confirm in MetaMask.";
+      try {
+        const tx = await contract.setMessage(text);
+        document.getElementById("status").innerText = "Transaction pending: " + tx.hash;
+        await tx.wait();
+        document.getElementById("status").innerText = "Success! Message updated.";
+        readMessage();
+      } catch (err) {
+        document.getElementById("status").innerText = "Transaction failed!";
+      }
+    }
+
+    // 4. Reset Function
+    async function resetContractMessage() {
+      if (!contract) return alert("Connect wallet first!");
+      document.getElementById("status").innerText = "Resetting message...";
+      try {
+        const tx = await contract.resetMessage();
+        await tx.wait();
+        document.getElementById("status").innerText = "Message reset successfully!";
+        readMessage();
+      } catch (err) {
+        document.getElementById("status").innerText = "Reset failed!";
+      }
+    }
+  </script>
+</body>
+</html>
