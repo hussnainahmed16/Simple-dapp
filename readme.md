@@ -11,8 +11,3 @@ A basic dApp connecting HTML/JS to a Solidity contract on the Sepolia testnet.
 2. Copy the deployed address and paste it into `CONTRACT_ADDRESS` in `index.html`.
 3. Open `index.html` in your browser.
 4. Click **Connect Wallet**, then test the **Read** and **Update** buttons.
-
-## Screenshots
-- `screenshot1.png` - Contract deployed in Remix on Sepolia
-- `screenshot2.png` - MetaMask confirming the transaction
-- `screenshot3.png` - Webpage showing updated message and wallet connected
