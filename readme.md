@@ -4,7 +4,7 @@ A basic dApp connecting HTML/JS to a Solidity contract on the Sepolia testnet.
 
 ## Contract Information
 - **Network:** Sepolia Testnet
-- **Contract Address:** PASTE_YOUR_SEPOLIA_CONTRACT_ADDRESS_HERE
+- **Contract Address: 0x927001DCB7f57793086845cd6632a89cbf499024
 
 ## How to Run
 1. Deploy `SmartContract.sol` in Remix on the Sepolia network using **Injected Provider - MetaMask**.
